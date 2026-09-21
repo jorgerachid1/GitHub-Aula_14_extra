@@ -1,8 +1,20 @@
 ##### Atividade aula 14 - extra - banco 2 - equivalente ao SINASC ######
 ##### Na branch main inserir os comandos e salvar o script com o nome script_aula_14_extra#####
-
+install.packages("usethis")
+library(usethis)
+install.packages("gert")
+library(gert)
 # Tarefa 1: Leitura do banco de dados banco 2 = SINASC.csv com o nome de dados_aula14
 # Ler o arquivo, verificar estrutura dos dados e dar uma olhada nos dados
+dados_aula14 = read.csv("banco 2 SINASC.csv", sep = ";", encoding = "latin1")
+dim(dados_aula14)
+str(dados_aula14)
+head(dados_aula14)
+
+
+git_add(".")
+git_commit(" script - tarefa 1")
+git_push()
 
 # Ao terminar a Tarefa 1 commit com a mensagem " script - tarefa 1" e envie para o repositório Aula_14_Extra
 
@@ -12,7 +24,31 @@
 # Atribuir legendas para a variável TIPO_VEICULO, sendo 1: Carro e 2: Moto
 # Criar uma nova variável em dados_aula14 F_IDADE categorizando as idades em: 22 a 34, 35 a 45
 
+table(dados_aula14$SEXO_PROPRIETARIO, useNA = "always")
+
+dados_aula14$SEXO_PROPRIETARIO = tolower(dados_aula14$SEXO_PROPRIETARIO)
+dados_aula14$SEXO_PROPRIETARIO[dados_aula14$SEXO_PROPRIETARIO == "masculino"] = "Masculino"
+dados_aula14$SEXO_PROPRIETARIO[dados_aula14$SEXO_PROPRIETARIO == "feminino"] = "Feminino"
+dados_aula14$SEXO_PROPRIETARIO = factor(dados_aula14$SEXO_PROPRIETARIO, levels = c("Masculino", "Feminino"))
+
+dados_aula14$TIPO_VEICULO = factor(dados_aula14$TIPO_VEICULO, levels = c(1, 2),
+                                   labels = c("Carro", "Moto"))
+
+dados_aula14$F_IDADE = cut(dados_aula14$IDADE_PROPRIETARIO,
+                           breaks = c(21, 34, 45),
+                           labels = c("22 a 34", "35 a 45"),
+                           include.lowest = TRUE)
+
+table(dados_aula14$SEXO_PROPRIETARIO, useNA = "always")
+str(dados_aula14)
+
+
+git_add(".")
+git_commit(" script - tarefa 1 a 2")
+git_push()
+
 # Ao terminar a Tarefa 2 commit com a mensagem " script - tarefa 1 a 2" e envie para o repositório Aula_14_Extra
+
 
 
 # Tarefa 3: Leitura do banco de dados Tabela_PAM.csv (com o nome tabela_pam) e:
@@ -20,6 +56,27 @@
 # criar a variável PAM (somente quando TIPO_VEICULO = "Carro"), de acordo com IDADE_PROPRIETARIO e SEXO_PROPRIETARIO, com as seguintes categorias:
 # PAM = "PIC", se VALOR_VEICULO < VALOR_P10; "AIC", se VALOR_P10 <= VALOR_VEICULO <= VALOR_P90; "GIC", se VALOR_VEICULO > VALOR_P90
 
+tabela_pam = read.csv("Tabela_PAM.csv", sep = ";", encoding = "latin1")
+str(tabela_pam)
+
+dados_aula14 = merge(dados_aula14, tabela_pam,
+                     by = c("IDADE_PROPRIETARIO", "SEXO_PROPRIETARIO"), all.x = TRUE, sort = FALSE)
+
+dados_aula14$PAM = NA
+carro = dados_aula14$TIPO_VEICULO == "Carro"
+dados_aula14$PAM[carro & dados_aula14$VALOR_VEICULO <  dados_aula14$VALOR_P10] = "PIC"
+dados_aula14$PAM[carro & dados_aula14$VALOR_VEICULO >= dados_aula14$VALOR_P10 &
+                   dados_aula14$VALOR_VEICULO <= dados_aula14$VALOR_P90] = "AIC"
+dados_aula14$PAM[carro & dados_aula14$VALOR_VEICULO >  dados_aula14$VALOR_P90] = "GIC"
+dados_aula14$PAM = factor(dados_aula14$PAM, levels = c("PIC", "AIC", "GIC"))
+
+table(dados_aula14$PAM, useNA = "always")
+str(dados_aula14)
+
+
+git_add(".")
+git_commit(" script - tarefa 1 a 3")
+git_push()
 # Ao terminar a Tarefa 3 commit com a mensagem " script - tarefa 1 a 3" e envie para o repositório Aula_14_Extra
 
  
